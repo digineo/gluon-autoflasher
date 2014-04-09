@@ -2,10 +2,10 @@
 
 base_fw_name="gluon-ffpb-0.3.999-exp20140409-"
 
-ping -c 1 192.168.0.1 > /dev/null
+ping -n -c 1 -W 1 192.168.0.1 > /dev/null
 if [ $? -ne 0 ]; then
 	echo "ROUTER OFFLINE? cannot ping 192.168.0.1 :("
-	exit 1
+	return 1
 fi
 
 model=$(curl --basic -su admin:admin http://192.168.0.1/ | grep -oE "WR[0-9]+N")
@@ -23,7 +23,7 @@ elif [ "$hwver" = "WR841N v8" ]; then
 	image="${base_fw_name}tp-link-tl-wr841n-nd-v8.bin"
 else
 	echo "UNKNOWN MODEL ($hwver), SORRY :("
-	exit 2
+	return 2
 fi
 
 echo -en "flashing image: $image ... "
@@ -33,8 +33,9 @@ echo "done :)"
 
 echo -en "waiting for router to come up again "
 
-while ! ping -n -c 1 -W 1 192.168.1.1 > /dev/null; do
+while ! ping -n -c 1 -W 3 192.168.1.1 > /dev/null; do
 	echo -en "."
 done
 
 echo " \o/"
+echo
