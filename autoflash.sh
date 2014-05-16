@@ -2,6 +2,14 @@
 
 base_fw_name="gluon-ffpb-0.4~beta2-"
 
+function quit() {
+	if [ x"${BASH_SOURCE[0]}" == x"$0" ]; then
+		exit $*
+	else
+		return $*
+	fi
+}
+
 # download missing firmware images
 for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9; do
 	if [ ! -r "images/${base_fw_name}${model}.bin" ]; then
@@ -13,7 +21,7 @@ for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9; do
 			echo "ERROR"
 			rm "images/${base_fw_name}${model}.bin" 2>/dev/null
 			echo "Failed to download firmware. Please ensure the firmware for '${base_fw_name}${model}' is present in images/ directory."
-			return 3
+			quit 3
 		fi
 	fi
 done
@@ -21,7 +29,7 @@ done
 ping -n -c 1 -W 1 192.168.0.1 > /dev/null
 if [ $? -ne 0 ]; then
 	echo "ROUTER OFFLINE? cannot ping 192.168.0.1 :("
-	return 1
+	quit 1
 fi
 
 model=$(curl --basic -su admin:admin http://192.168.0.1/ | grep -oE "WR[0-9]+N")
@@ -39,7 +47,7 @@ elif [ "$hwver" = "WR841N v8" ]; then
 	image="${base_fw_name}tp-link-tl-wr841n-nd-v8.bin"
 else
 	echo "UNKNOWN MODEL ($hwver), SORRY :("
-	return 2
+	quit 2
 fi
 
 # prepend images/ subdirectory to filename
