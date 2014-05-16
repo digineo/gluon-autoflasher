@@ -2,6 +2,22 @@
 
 base_fw_name="gluon-ffpb-0.4~beta2-"
 
+# download missing firmware images
+for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9; do
+	if [ ! -r "images/${base_fw_name}${model}.bin" ]; then
+		echo -en "Downloading image for '$model' ... "
+		wget -q "http://firmware.paderborn.freifunk.net/stable/${base_fw_name}${model}.bin" -O "images/${base_fw_name}${model}.bin"
+		if [ $? -eq 0 ]; then
+			echo "OK"
+		else
+			echo "ERROR"
+			rm "images/${base_fw_name}${model}.bin" 2>/dev/null
+			echo "Failed to download firmware. Please ensure the firmware for '${base_fw_name}${model}' is present in images/ directory."
+			return 3
+		fi
+	fi
+done
+
 ping -n -c 1 -W 1 192.168.0.1 > /dev/null
 if [ $? -ne 0 ]; then
 	echo "ROUTER OFFLINE? cannot ping 192.168.0.1 :("
