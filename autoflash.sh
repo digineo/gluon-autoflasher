@@ -1,6 +1,6 @@
 #!/bin/bash
 
-base_fw_name="gluon-ffpb-0.3.999-exp20140409-"
+base_fw_name="gluon-ffpb-0.4~beta2-"
 
 ping -n -c 1 -W 1 192.168.0.1 > /dev/null
 if [ $? -ne 0 ]; then
