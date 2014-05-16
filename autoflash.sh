@@ -60,8 +60,9 @@ echo "done :)"
 
 echo -en "waiting for router to come up again "
 
-while ! ping -n -c 1 -W 3 192.168.1.1 > /dev/null; do
+while ! ping -n -c 1 -W 2 192.168.1.1 > /dev/null; do
 	echo -en "."
+	sleep 1
 done
 
 echo " \o/"
