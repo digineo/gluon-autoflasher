@@ -26,6 +26,9 @@ else
 	return 2
 fi
 
+# prepend images/ subdirectory to filename
+image="images/$image"
+
 echo -en "flashing image: $image ... "
 curl --basic -su admin:admin -e $hwver_page -F Filename=@$image $uploadurl > /dev/null
 curl --basic -su admin:admin -e $uploadurl http://192.168.0.1/userRpm/FirmwareUpdateTemp.htm > /dev/null
