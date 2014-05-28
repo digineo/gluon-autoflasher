@@ -1,6 +1,6 @@
 #!/bin/bash
 
-base_fw_name="gluon-ffpb-0.4~beta2-"
+base_fw_name="gluon-ffpb-0.4.1-"
 
 function quit() {
 	if [ x"${BASH_SOURCE[0]}" == x"$0" ]; then
