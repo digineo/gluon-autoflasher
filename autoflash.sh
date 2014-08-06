@@ -39,6 +39,9 @@ fi
 model=$(curl_admin http://192.168.0.1/ | grep -oE "WD?R[0-9]+N?")
 echo "found model: $model"
 
+mac=$(arp -i eth0 -a 192.168.0.1 |grep -oE " [0-9a-f:]+ " |tr -d ' ')
+echo "mac address: $mac"
+
 hwver_page="http://192.168.0.1/userRpm/SoftwareUpgradeRpm.htm"
 hwver=$(curl_admin -e http://192.168.0.1/userRpm/MenuRpm.htm $hwver_page | grep -oE "$model v[0-9]+")
 echo "hw version: $hwver"
