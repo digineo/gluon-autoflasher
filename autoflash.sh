@@ -74,11 +74,22 @@ curl_admin -e $uploadurl http://192.168.0.1/userRpm/FirmwareUpdateTemp.htm > /de
 echo "done :)"
 
 echo -en "waiting for router to come up again "
-
 while ! ping -n -c 1 -W 2 192.168.1.1 > /dev/null; do
 	echo -en "."
 	sleep 1
 done
-
 echo " \o/"
+
+# upload authorized keys if present
+if [ -e authorized_keys ]; then
+	echo -en "uploading authorized_keys ... "
+	keys=`cat authorized_keys`
+	curl -fsS -F cbi.submit=1 -F "cbid.system._keys._data=$keys" http://192.168.1.1/cgi-bin/luci/admin/index > /dev/null
+	if [ $? -eq 0 ]; then
+		echo "OK"
+	else
+		quit 4
+	fi
+fi
+
 echo

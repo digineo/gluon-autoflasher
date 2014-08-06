@@ -1,2 +1,3 @@
 images/**
 !images/.gitkeep
+authorized_keys
