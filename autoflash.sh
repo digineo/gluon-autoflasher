@@ -1,7 +1,6 @@
 #!/bin/bash
 
-base_fw_url=http://firmware.paderborn.freifunk.net/stable/
-base_fw_name="gluon-ffpb-0.5"
+source ./config
 
 function quit() {
 	if [ x"${BASH_SOURCE[0]}" == x"$0" ]; then

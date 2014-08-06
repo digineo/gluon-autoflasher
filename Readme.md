@@ -4,6 +4,10 @@ Diese Skripte sind für **Freifunk Paderborn** angepasst. Die benötigte Firmwar
 
 ## Benutzung
 
+Konfiguration:
+
+* **config** enthält die Adresse zum Download der Images, sowie die zu installierende Version.
+
 Es gibt zwei Skripte:
 
 * **autoflash.sh** versucht einen original TP-Link Router zu erkennen. Sobald dieser identifiziert werden konnte wird die neue Firmware automatisch installiert und nach Abschluss das Skript beendet.
