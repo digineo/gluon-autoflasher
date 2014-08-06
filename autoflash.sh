@@ -11,7 +11,7 @@ function quit() {
 }
 
 # download missing firmware images
-for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9; do
+for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9 tp-link-tl-wdr3500-v1 tp-link-tl-wdr3600-v1 tp-link-tl-wdr4300-v1; do
 	if [ ! -r "images/${base_fw_name}${model}.bin" ]; then
 		echo -en "Downloading image for '$model' ... "
 		wget -q "http://firmware.paderborn.freifunk.net/stable/${base_fw_name}${model}.bin" -O "images/${base_fw_name}${model}.bin"
@@ -32,7 +32,7 @@ if [ $? -ne 0 ]; then
 	quit 1
 fi
 
-model=$(curl --basic -su admin:admin http://192.168.0.1/ | grep -oE "WR[0-9]+N")
+model=$(curl --basic -su admin:admin http://192.168.0.1/ | grep -oE "WD?R[0-9]+N?")
 echo "found model: $model"
 
 hwver_page="http://192.168.0.1/userRpm/SoftwareUpgradeRpm.htm"
@@ -45,6 +45,12 @@ if [ "$hwver" = "WR841N v9" ]; then
 	image="${base_fw_name}tp-link-tl-wr841n-nd-v9.bin"
 elif [ "$hwver" = "WR841N v8" ]; then
 	image="${base_fw_name}tp-link-tl-wr841n-nd-v8.bin"
+elif [ "$hwver" = "WDR3500 v1" ]; then
+	image="${base_fw_name}tp-link-tl-wdr3500-v1.bin"
+elif [ "$hwver" = "WDR3600 v1" ]; then
+	image="${base_fw_name}tp-link-tl-wdr3600-v1.bin"
+elif [ "$hwver" = "WDR4300 v1" ]; then
+	image="${base_fw_name}tp-link-tl-wdr4300-v1.bin"
 else
 	echo "UNKNOWN MODEL ($hwver), SORRY :("
 	quit 2
