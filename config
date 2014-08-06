@@ -1,6 +1,6 @@
 
 # URL of the firmware files
-base_fw_url=http://firmware.paderborn.freifunk.net/stable/
+base_fw_url=http://downloads.bremen.freifunk.net/firmware/testing/factory/
 
 # the current firmware version
-base_fw_name="gluon-ffpb-0.5"
+base_fw_name="gluon-ffhb-v0.3.101-testing3"
