@@ -11,6 +11,10 @@ function quit() {
 	fi
 }
 
+function curl_admin() {
+	curl -fsS --basic -u admin:admin $@
+}
+
 # download missing firmware images
 for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9 tp-link-tl-wdr3500-v1 tp-link-tl-wdr3600-v1 tp-link-tl-wdr4300-v1; do
 	if [ ! -r "images/${base_fw_name}${model}.bin" ]; then
@@ -33,11 +37,11 @@ if [ $? -ne 0 ]; then
 	quit 1
 fi
 
-model=$(curl --basic -su admin:admin http://192.168.0.1/ | grep -oE "WD?R[0-9]+N?")
+model=$(curl_admin http://192.168.0.1/ | grep -oE "WD?R[0-9]+N?")
 echo "found model: $model"
 
 hwver_page="http://192.168.0.1/userRpm/SoftwareUpgradeRpm.htm"
-hwver=$(curl --basic -su admin:admin -e http://192.168.0.1/userRpm/MenuRpm.htm $hwver_page | grep -oE "$model v[0-9]+")
+hwver=$(curl_admin -e http://192.168.0.1/userRpm/MenuRpm.htm $hwver_page | grep -oE "$model v[0-9]+")
 echo "hw version: $hwver"
 
 uploadurl="http://192.168.0.1/incoming/Firmware.htm"
@@ -61,8 +65,8 @@ fi
 image="images/$image"
 
 echo -en "flashing image: $image ... "
-curl --basic -su admin:admin -e $hwver_page -F Filename=@$image $uploadurl > /dev/null
-curl --basic -su admin:admin -e $uploadurl http://192.168.0.1/userRpm/FirmwareUpdateTemp.htm > /dev/null
+curl_admin -e $hwver_page -F Filename=@$image $uploadurl > /dev/null
+curl_admin -e $uploadurl http://192.168.0.1/userRpm/FirmwareUpdateTemp.htm > /dev/null
 echo "done :)"
 
 echo -en "waiting for router to come up again "
