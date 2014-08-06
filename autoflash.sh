@@ -1,6 +1,7 @@
 #!/bin/bash
 
-base_fw_name="gluon-ffpb-0.5-"
+base_fw_url=http://firmware.paderborn.freifunk.net/stable/
+base_fw_name="gluon-ffpb-0.5"
 
 function quit() {
 	if [ x"${BASH_SOURCE[0]}" == x"$0" ]; then
@@ -14,7 +15,7 @@ function quit() {
 for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9 tp-link-tl-wdr3500-v1 tp-link-tl-wdr3600-v1 tp-link-tl-wdr4300-v1; do
 	if [ ! -r "images/${base_fw_name}${model}.bin" ]; then
 		echo -en "Downloading image for '$model' ... "
-		wget -q "http://firmware.paderborn.freifunk.net/stable/${base_fw_name}${model}.bin" -O "images/${base_fw_name}${model}.bin"
+		wget -q "${base_fw_url}${base_fw_name}-${model}.bin" -O "images/${base_fw_name}${model}.bin"
 		if [ $? -eq 0 ]; then
 			echo "OK"
 		else
