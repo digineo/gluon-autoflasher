@@ -1,6 +1,5 @@
 
 # URL of the firmware files
-base_fw_url=http://downloads.bremen.freifunk.net/firmware/testing/factory/
+fw_base_url=http://downloads.openwrt.org/barrier_breaker/14.07-rc2/
 
-# the current firmware version
-base_fw_name="gluon-ffhb-v0.3.101-testing3"
+fw_pattern="openwrt-*-wdr*-factory.bin"

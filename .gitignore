@@ -1,3 +1,4 @@
 images/**
 !images/.gitkeep
 authorized_keys
+downloads.openwrt.org

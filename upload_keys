@@ -1,0 +1,18 @@
+#!/usr/bin/expect
+
+set timeout 1
+set host [lindex $argv 0]
+set keys [lindex $argv 1]
+
+spawn telnet $host
+
+expect {
+	"'^]'." {
+	 	send "echo '$keys' > /etc/dropbear/authorized_keys\r"
+		send "exit\r"
+		expect eof
+	}
+	timeout {
+		exit 1
+	}
+}

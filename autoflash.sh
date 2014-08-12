@@ -14,28 +14,22 @@ function curl_admin() {
 	curl -fsS --basic -u admin:admin $@
 }
 
-# download missing firmware images
-for model in tp-link-tl-wr841n-nd-v8 tp-link-tl-wr841n-nd-v9 tp-link-tl-wdr3500-v1 tp-link-tl-wdr3600-v1 tp-link-tl-wdr4300-v1; do
-	filename="${base_fw_name}-${model}.bin"
-	imagefile="images/${filename}"
-	if [ ! -r $imagefile ]; then
-		echo -en "Downloading image for '$model' ... "
-		wget -q "${base_fw_url}${filename}" -O "$imagefile"
-		if [ $? -eq 0 ]; then
-			echo "OK"
-		else
-			echo "ERROR"
-			rm -f "$imagefile"
-			echo "Failed to download firmware. Please ensure the firmware for '${base_fw_name}-${model}' is present in images/ directory."
-			quit 3
-		fi
+if [ ! -e downloads.openwrt.org ]; then
+	# download missing firmware images
+	wget \
+		--mirror \
+		--no-parent \
+		-A "$fw_pattern" \
+		$fw_base_url
+	if [ $? -ne 0 ]; then
+		quit 1
 	fi
-done
+fi
 
 ping -n -c 1 -W 1 192.168.0.1 > /dev/null
 if [ $? -ne 0 ]; then
 	echo "ROUTER OFFLINE? cannot ping 192.168.0.1 :("
-	quit 1
+	quit 2
 fi
 
 mac=$(arp -i eth0 -a 192.168.0.1 |grep -oE " [0-9a-f:]+ " |tr -d ' ')
@@ -51,22 +45,26 @@ echo "hw version:  $hwver"
 uploadurl="http://192.168.0.1/incoming/Firmware.htm"
 image=""
 if [ "$hwver" = "WR841N v9" ]; then
-	image="${base_fw_name}-tp-link-tl-wr841n-nd-v9.bin"
+	image="openwrt-ar71xx-generic-tl-wr841n-v9-squashfs-factory.bin"
 elif [ "$hwver" = "WR841N v8" ]; then
-	image="${base_fw_name}-tp-link-tl-wr841n-nd-v8.bin"
+	image="openwrt-ar71xx-generic-tl-wr841n-v8-squashfs-factory.bin"
 elif [ "$hwver" = "WDR3500 v1" ]; then
-	image="${base_fw_name}-tp-link-tl-wdr3500-v1.bin"
+	image="openwrt-ar71xx-generic-tl-wdr3500-v1-squashfs-factory.bin"
 elif [ "$hwver" = "WDR3600 v1" ]; then
-	image="${base_fw_name}-tp-link-tl-wdr3600-v1.bin"
+	image="openwrt-ar71xx-generic-tl-wdr3600-v1-squashfs-factory.bin"
 elif [ "$hwver" = "WDR4300 v1" ]; then
-	image="${base_fw_name}-tp-link-tl-wdr4300-v1.bin"
+	image="openwrt-ar71xx-generic-tl-wdr4300-v1-squashfs-factory.bin"
 else
 	echo "UNKNOWN MODEL ($hwver), SORRY :("
 	quit 2
 fi
 
-# prepend images/ subdirectory to filename
-image="images/$image"
+image=$(find downloads.openwrt.org -name $image)
+
+if [ ! -e $image ]; then
+	echo "Image not found: $image"
+	quit 3
+fi
 
 echo -en "flashing image: $image ... "
 curl_admin -e $hwver_page -F Filename=@$image $uploadurl > /dev/null
@@ -82,14 +80,20 @@ echo " \o/"
 
 # upload authorized keys if present
 if [ -e authorized_keys ]; then
-	echo -en "uploading authorized_keys ... "
-	keys=`cat authorized_keys`
-	curl -fsS -F cbi.submit=1 -F "cbid.system._keys._data=$keys" http://192.168.1.1/cgi-bin/luci/admin/index > /dev/null
-	if [ $? -eq 0 ]; then
-		echo "OK"
-	else
-		quit 4
-	fi
+  echo -en "uploading authorized_keys ... "
+  keys=`cat authorized_keys`
+
+  ./upload_keys 192.168.1.1 "$keys" > /dev/null
+
+  if [ $? -eq 0 ]; then
+    echo "OK"
+  else
+    echo "failed"
+    quit 4
+  fi
+
+  echo -en "stopping telnet ... "
+  ssh -o UserKnownHostsFile=/dev/null -o StricHostKeyChecking=no root@192.168.1.1 /etc/init.d/telnet stop
 fi
 
 echo
