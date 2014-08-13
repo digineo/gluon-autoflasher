@@ -1,18 +1,29 @@
 #!/usr/bin/expect
+#
+# Upload authorized keys using telnet
+#
 
 set timeout 1
 set host [lindex $argv 0]
 set keys [lindex $argv 1]
 
+
+# check if everthing is provided
+if { $host == "" || $keys == "" }  {
+  puts "Usage: <host> <keys>\n"
+  exit 1
+}
+
 spawn telnet $host
 
 expect {
 	"'^]'." {
-	 	send "echo '$keys' > /etc/dropbear/authorized_keys\r"
+		send "echo '$keys' > /etc/dropbear/authorized_keys\r"
+		send "/etc/init.d/dropbear start\r"
 		send "exit\r"
 		expect eof
 	}
 	timeout {
-		exit 1
+		exit 2
 	}
 }
