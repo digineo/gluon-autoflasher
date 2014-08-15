@@ -16,14 +16,7 @@ function curl_admin() {
 
 if [ ! -e downloads.openwrt.org ]; then
 	# download missing firmware images
-	wget \
-		--mirror \
-		--no-parent \
-		-A "$fw_pattern" \
-		$fw_base_url
-	if [ $? -ne 0 ]; then
-		quit 1
-	fi
+  ./download_images.sh || quit 1
 fi
 
 ping -n -c 1 -W 1 192.168.0.1 > /dev/null
