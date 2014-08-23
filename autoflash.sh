@@ -86,7 +86,9 @@ if [ -e authorized_keys ]; then
   fi
 
   echo -en "stopping telnet ... "
-  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@192.168.1.1 /etc/init.d/telnet stop
+  while ! ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@192.168.1.1 /etc/init.d/telnet stop; do
+    sleep 1
+  done
 fi
 
 echo
