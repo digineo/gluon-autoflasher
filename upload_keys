@@ -18,12 +18,16 @@ spawn telnet $host
 
 expect {
 	"'^]'." {
+		send "mount_root\r"
 		send "echo '$keys' > /etc/dropbear/authorized_keys\r"
+		expect {
+			"can't create" { send_user "\nFailed to upload authorized_keys.\n"; exit 2 }
+		}
 		send "/etc/init.d/dropbear start\r"
 		send "exit\r"
 		expect eof
 	}
 	timeout {
-		exit 2
+		exit 3
 	}
 }
