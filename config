@@ -3,4 +3,4 @@
 base_fw_url=http://downloads.bremen.freifunk.net/firmware/testing/factory/
 
 # the current firmware version
-base_fw_name="gluon-ffhb-0.5~testing4"
+base_fw_name="gluon-ffhb-0.5~testing5"
