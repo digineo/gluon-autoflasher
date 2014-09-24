@@ -2,6 +2,13 @@
 
 source ./config
 
+
+if $INTERFACE; then
+	curl_options="--interface '$INTERFACE'"
+else
+	curl_options=""
+fi
+
 function quit() {
 	if [ x"${BASH_SOURCE[0]}" == x"$0" ]; then
 		exit $*
@@ -11,7 +18,7 @@ function quit() {
 }
 
 function curl_admin() {
-	curl -fsS --basic -u admin:admin $@
+	curl $curl_options -fsS --basic -u admin:admin $@
 }
 
 # download missing firmware images
@@ -84,7 +91,7 @@ echo " \o/"
 if [ -e authorized_keys ]; then
 	echo -en "uploading authorized_keys ... "
 	keys=`cat authorized_keys`
-	curl -fsS -F cbi.submit=1 -F "cbid.system._keys._data=$keys" http://192.168.1.1/cgi-bin/luci/admin/index > /dev/null
+	curl $curl_options -fsS -F cbi.submit=1 -F "cbid.system._keys._data=$keys" http://192.168.1.1/cgi-bin/luci/admin/index > /dev/null
 	if [ $? -eq 0 ]; then
 		echo "OK"
 	else
