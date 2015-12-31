@@ -1,0 +1,7 @@
+---
+firmware:
+  # URL of the factory images with ending slash
+  url: http://downloads.bremen.freifunk.net/firmware/stable/factory/
+
+  # prefix of the images (usually gluon-$site-$version)
+  prefix: "gluon-ffhb-2015.1.2+bremen3"

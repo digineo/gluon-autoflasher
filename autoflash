@@ -1,0 +1,8 @@
+#!/usr/bin/env python2
+
+from sys import path
+path.append("lib")
+
+import autoflasher
+
+autoflasher.Run()
