@@ -126,7 +126,7 @@ class AutoFlasher:
 
       # get session ID
       html  = self.request("save", "root").text
-      match = re.compile('http://192.168.0.1/([0-9A-Z]+)/userRpm/').search(html)
+      match = re.compile('http://[0-9\.]+/([0-9A-Z]+)/userRpm/').search(html)
       if match == None:
         raise RuntimeError("Unable to extract session_id")
 
