@@ -15,7 +15,7 @@ It has been tested with:
 
 ## Requirements
 
-The following packages have to be installed on your system:
+The following packages have to be installed on the system:
 
 ### Debian/Ubuntu
 
@@ -39,7 +39,9 @@ Assuming your interface is `eth0` then you run on Linux as root:
 ip addr add 192.168.0.2/24 dev eth0
 ```
 
-Then you start the autoflasher with:
+Copy the `config.yml.default` to `config.yml` and adapt it to your needs.
+
+Then start the autoflasher with:
 
 ```
 ./autoflash
