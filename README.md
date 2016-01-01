@@ -9,6 +9,7 @@ Gluon Autoflasher
 It has been tested with:
 * TP-Link TL-WDR3600 v1 (Firmware 130909 and 150518)
 * TP-Link TL-WDR4300 v1 (Firmware 150518)
+* TP-Link TL-WR1043ND v1 (Firmware 140319)
 * TP-Link TL-WR1043ND v2 (Firmware 150717)
 
 
