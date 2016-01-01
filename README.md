@@ -7,7 +7,8 @@ Work in Progress
 ## Compatibility
 
 It has been tested with:
-* WDR3600v1 (Firmware 130909 and 150518)
+* TP-Link TL-WDR3600 v1 (Firmware 130909 and 150518)
+* TP-Link TL-WDR4300 v1 (Firmware 150518)
 
 
 ## Requirements
