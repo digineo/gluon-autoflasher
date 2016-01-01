@@ -12,4 +12,4 @@ It has been tested with:
 
 ## License
 
-Coming soon
+This project is licensed under the terms of the AGPL license.
