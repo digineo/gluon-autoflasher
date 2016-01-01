@@ -79,10 +79,27 @@ def GetImage(model):
     print " ✓"
   return path
 
+
+def GetAuthorization(html):
+  if "loginBox" not in html:
+    raise UnsupportedModel("unexpected html page")
+
+  if "hex_md5" in html:
+    return "hex_md5"
+  elif "Base64Encoding" in html:
+    return "base64"
+
+  raise UnsupportedModel("unsupported login page")
+
+
 class AutoFlasher:
   def __init__(self, address):
     self.address = address
     self.session = requests.Session()
+    self.authValues = {
+      'hex_md5': "Basic%20YWRtaW46MjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzM%3D",
+      'base64':  "Basic%20YWRtaW46YWRtaW4%3D",
+    }
     self.urls = {
       "root":    "/",
       "save":    "/userRpm/LoginRpm.htm?Save=Save",
@@ -118,11 +135,9 @@ class AutoFlasher:
     try:
       # newer TP-Link firmwares use cookie authentication
       html = self.request("root", "root").text
-      if "loginBox" not in html:
-        raise RuntimeError("unexpected html page")
 
       # store credentials in cookie
-      self.session.cookies.set("Authorization", "Basic%20YWRtaW46MjEyMzJmMjk3YTU3YTVhNzQzODk0YTBlNGE4MDFmYzM%3D")
+      self.session.cookies.set("Authorization", self.authValues[GetAuthorization(html)])
 
       # get session ID
       html  = self.request("save", "root").text

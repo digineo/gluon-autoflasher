@@ -16,12 +16,30 @@ import os
 
 modelsDirectory = "models"
 
-def getModel(filename):
-  with open("%s/%s" % (modelsDirectory, filename),'r') as f:
-    return autoflasher.ExtractModel(f.read())
+
+class TestAuthorization(unittest2.TestCase):
+
+  def get_authorization(self, basename):
+    return autoflasher.GetAuthorization(open("login/%s.html" % basename,'r').read())
+
+  def test_unsupported(self):
+    with self.assertRaises(autoflasher.UnsupportedModel):
+      self.get_authorization("unsupported")
+
+  def test_base64(self):
+    self.assertEqual("base64", self.get_authorization("wr1043-v1"))
+
+  def test_base64(self):
+    self.assertEqual("hex_md5", self.get_authorization("wdr3600_150518"))
+
 
 # Empty class
 class TestModels(unittest2.TestCase): pass
+
+
+def getModel(filename):
+  with open("%s/%s" % (modelsDirectory, filename),'r') as f:
+    return autoflasher.ExtractModel(f.read())
 
 def create_test(filename, model):
   def f(self):
