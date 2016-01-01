@@ -1,7 +1,7 @@
 Gluon Autoflasher
 =================
 
-Work in Progress
+*Use at your own risk!*
 
 
 ## Compatibility
