@@ -3,10 +3,9 @@ import os
 import re
 import sys
 import subprocess
-import urllib2, base64
 import yaml
 import random
-import string
+import requests
 
 
 FNULL    = open(os.devnull, 'w')
@@ -61,21 +60,28 @@ def GetImage(model):
   if not os.path.exists(path):
     write("Downloading %s ..." % url)
     tmpfile  = "%s.tmp" % path
-    response = urllib2.urlopen(url)
+
+    # Do the request
+    response = requests.get(url, stream=True)
+    if response.status_code != requests.codes.ok:
+      response.raise_for_status()
+
+    # Save the response
     with open(tmpfile, 'wb') as f:
-      while True:
-        chunk = response.read(1024*1024)
-        if not chunk: break
+      for chunk in response.iter_content(chunk_size=1024*256):
         f.write(chunk)
         write(".")
+
+    # Rename tempfile to target
     os.rename(tmpfile, path)
     print " ✓"
   return path
 
 class AutoFlasher:
   def __init__(self, address):
-    WaitForPing(address)
     self.address = address
+    self.session = requests.Session()
+    self.session.auth = ('admin', 'admin')
     self.urls = {
       "menu":    "http://%s/userRpm/MenuRpm.htm",
       "status":  "http://%s/userRpm/StatusRpm.htm",
@@ -84,51 +90,42 @@ class AutoFlasher:
       "flash":   "http://%s/userRpm/FirmwareUpdateTemp.htm",
     }
 
+    WaitForPing(address)
+
     write("Fetching model ... ")
-    request    = self.createRequest("status", "menu")
-    response   = urllib2.urlopen(request)
-    self.model = ExtractModel(response.read())
+    self.model = ExtractModel(self.request("status", "menu").text)
     print self.model
 
     self.image = GetImage(self.model)
     write("Uploading image ... ")
-    self.upload()
+    self.request("upload", "upgrade", files={'Filename': open(self.image, 'rb')})
     print " ✓"
 
     write("Flashing ... ")
-    self.flash()
+    self.request("flash", "upload")
     print " ✓"
 
     WaitForPing("192.168.1.1")
-    print " ✓"
 
-  def upload(self):
-    data     = open(self.image, 'rb').read()
-    boundary = ''.join(random.choice(string.letters) for ii in range(31))
-    body     = '\r\n'.join([
-      '--%s' % boundary,
-      'Content-Disposition: form-data; name="Filename"; filename="firmware.bin"',
-      'Content-Type: application/octet-stream',
-      '',
-      data,
-      '--%s--' % boundary,
-      ''
-    ])
-    request = self.createRequest("upload", "upgrade", body=body)
-    request.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
-    request.add_header('Content-Length', str(len(body)))
-    urllib2.urlopen(request)
+  def request(self, urlType, refererType, files=None):
+    url     = self.getURL(urlType)
+    headers = {"referer": self.getURL(refererType)}
 
+    # do the request
+    if files == None:
+      response = self.session.get(url, headers=headers)
+    else:
+      response = self.session.post(url, headers=headers, files=files)
 
-  def flash(self):
-    request = self.createRequest("flash", "upload")
-    urllib2.urlopen(request)
+    # check status code
+    if response.status_code != requests.codes.ok:
+      response.raise_for_status()
 
-  def createRequest(self, urlType, refererType, body=None):
-    request = urllib2.Request(self.urls[urlType] % self.address, body)
-    request.add_header('Authorization', b'Basic ' + base64.b64encode("admin:admin"))
-    request.add_header('Referer', self.urls[refererType] % self.address)
-    return request
+    return response
+
+  def getURL(self, type):
+    return self.urls[type] % self.address
+
 
 def Run():
   AutoFlasher("192.168.0.1")
