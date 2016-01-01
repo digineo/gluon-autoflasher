@@ -29,7 +29,7 @@ def write(str):
 # Waits for a host to respond to ICMP echo requests
 def WaitForPing(address):
   write("Waiting for %s ..." % address)
-  while 0 != subprocess.call(["/bin/ping","-c", "1", "-W", "1", address], stdout=FNULL):
+  while 0 != subprocess.call(["ping","-c", "1", "-W", "1", address], stdout=FNULL):
     write('.')
   print " ✓"
 
