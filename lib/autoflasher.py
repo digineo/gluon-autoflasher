@@ -38,8 +38,10 @@ class UnknownModel(InvalidModel): pass
 class UnsupportedModel(InvalidModel): pass
 
 def ExtractModel(html):
-  match = re.compile("WD?R[0-9]+N? v[0-9]+").search(html)
+  match = re.compile("WD?R[0-9]+[A-Z]* v[0-9]+").search(html)
   if match == None:
+    #with open('unknown-model.html', 'w') as f:
+    #  f.write(html)
     raise UnknownModel("Unable to extract model information")
 
   model = match.group(0)
