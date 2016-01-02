@@ -7,7 +7,7 @@ Gluon Autoflasher
 ## Compatibility
 
 It has been tested with:
-* TP-Link TL-WR841N V8 (Firmware 140724)
+* TP-Link TL-WR841N V8 (Firmware 130506, 140724)
 * TP-Link TL-WR841N V9 (Firmware 150310)
 * TP-Link TL-WR841N V10 (Firmware 150616)
 * TP-Link TL-WDR3600 v1 (Firmware 130909, 141022, 150302 and 150518)
