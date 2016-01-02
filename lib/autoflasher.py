@@ -49,7 +49,7 @@ def ExtractModel(html):
   if name != None:
     return name
   else:
-    raise UnsupportedModel("Unsupported model: %s" % model)
+    raise UnsupportedModel("Unsupported model: %s\nPlease add it to lib/models.yml" % model)
 
 
 # Returns the local path to the image
