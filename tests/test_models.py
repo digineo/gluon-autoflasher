@@ -26,11 +26,17 @@ class TestAuthorization(unittest2.TestCase):
     with self.assertRaises(autoflasher.UnsupportedModel):
       self.get_authorization("unsupported")
 
-  def test_base64(self):
-    self.assertEqual("base64", self.get_authorization("wr1043-v1"))
+  def test_wdr3600_150518(self):
+    self.assertEqual(('hex_md5', 'save'), self.get_authorization("wdr3600_150518"))
 
-  def test_base64(self):
-    self.assertEqual("hex_md5", self.get_authorization("wdr3600_150518"))
+  def test_wr1043v2_130428(self):
+    self.assertEqual(('hex_md5', 'save'), self.get_authorization("wr1043-v2_150707"))
+
+  def test_wr1043nd_130428(self):
+    self.assertEqual(('base64', 'root'), self.get_authorization("wr1043nd-v1_130428"))
+
+  def test_wr1043nd_150518(self):
+    self.assertEqual(('base64', 'root'), self.get_authorization("wr1043nd-v1_150518"))
 
 
 # Empty class

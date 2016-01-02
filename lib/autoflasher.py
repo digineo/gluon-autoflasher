@@ -85,11 +85,18 @@ def GetAuthorization(html):
     raise UnsupportedModel("unexpected html page")
 
   if "hex_md5" in html:
-    return "hex_md5"
+    method = "hex_md5"
   elif "Base64Encoding" in html:
-    return "base64"
+    method = "base64"
+  else:
+    raise UnsupportedModel("unsupported login page")
 
-  raise UnsupportedModel("unsupported login page")
+  if "LoginRpm.htm" in html:
+    uri = 'save'
+  else:
+    uri = 'root'
+
+  return (method,uri)
 
 
 class AutoFlasher:
@@ -113,7 +120,7 @@ class AutoFlasher:
 
     WaitForPing(address)
 
-    self.authorize()
+    self.authenticate()
 
     write("Fetching model ... ")
     self.model = ExtractModel(self.request("status", "menu").text)
@@ -131,21 +138,29 @@ class AutoFlasher:
 
     WaitForPing("192.168.1.1")
 
-  def authorize(self):
+  def authenticate(self):
     try:
       # newer TP-Link firmwares use cookie authentication
       html = self.request("root", "root").text
 
+      auth, uri = GetAuthorization(html)
+
       # store credentials in cookie
-      self.session.cookies.set("Authorization", self.authValues[GetAuthorization(html)])
+      self.session.cookies.set("Authorization", self.authValues[auth])
 
-      # get session ID
-      html  = self.request("save", "root").text
-      match = re.compile('http://[0-9\.]+/([0-9A-Z]+)/userRpm/').search(html)
-      if match == None:
-        raise RuntimeError("Unable to extract session_id")
+      # let's log in
+      html = self.request(uri, "root").text
 
-      self.session_prefix = "/" + match.group(1)
+      # was the login successful?
+      if "loginBox" in html:
+        raise UnsupportedModel("failed to authenticate")
+
+      if uri != "root":
+        # extract the session ID
+        match = re.compile('http://[0-9\.]+/([0-9A-Z]+)/userRpm/').search(html)
+        if match == None:
+          raise RuntimeError("Unable to extract session_id")
+        self.session_prefix = "/" + match.group(1)
 
     except requests.exceptions.HTTPError:
       # old TP-Link firmware versions use basic auth (i.e. WDR3600v1 130909)
