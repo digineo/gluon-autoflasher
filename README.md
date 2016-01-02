@@ -10,8 +10,8 @@ It has been tested with:
 * TP-Link TL-WR841N V8 (Firmware 140724)
 * TP-Link TL-WR841N V9 (Firmware 150310)
 * TP-Link TL-WR841N V10 (Firmware 150616)
-* TP-Link TL-WDR3600 v1 (Firmware 130909 and 150518)
-* TP-Link TL-WDR4300 v1 (Firmware 150518)
+* TP-Link TL-WDR3600 v1 (Firmware 130909, 141022, 150302 and 150518)
+* TP-Link TL-WDR4300 v1 (Firmware 141113, 150302 and 150518)
 * TP-Link TL-WR1043ND v2 (Firmware 150717 and 150910)
 
 
