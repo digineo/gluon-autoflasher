@@ -3,6 +3,6 @@
 from sys import path
 path.append("lib")
 
-import autoflasher
+import gluon.flasher
 
-autoflasher.Run()
+gluon.flasher.run("192.168.0.1")

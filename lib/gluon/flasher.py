@@ -1,86 +1,16 @@
 # coding: utf-8
-import os
 import re
-import sys
-import subprocess
-import yaml
-import random
 import requests
 
+from . import *
+import gluon.models as models
 
-FNULL    = open(os.devnull, 'w')
-BaseDir  = os.path.join(os.path.dirname(__file__), "..")
-ImageDir = os.path.join(BaseDir, "images")
-Config   = os.path.join(BaseDir, "images")
+# shorthand method
+def run(address):
+  Flasher(address).run()
 
-def loadYAML(path):
-  with open(os.path.join(BaseDir, path), 'r') as f:
-    return yaml.load(f)
-
-# Load models
-Config = loadYAML("config.yml")
-Models = loadYAML("lib/models.yml")
-
-# Writes output and flushes the buffer
-def write(str):
-  sys.stdout.write(str)
-  sys.stdout.flush()
-
-# Waits for a host to respond to ICMP echo requests
-def WaitForPing(address):
-  write("Waiting for %s ..." % address)
-  while 0 != subprocess.call(["ping","-c", "1", "-W", "1", address], stdout=FNULL):
-    write('.')
-  print " ✓"
-
-class InvalidModel(Exception): pass
-class UnknownModel(InvalidModel): pass
-class UnsupportedModel(InvalidModel): pass
-
-def ExtractModel(html):
-  match = re.compile("WD?R[0-9]+[A-Z]* v[0-9]+").search(html)
-  if match == None:
-    #with open('unknown-model.html', 'w') as f:
-    #  f.write(html)
-    raise UnknownModel("Unable to extract model information")
-
-  model = match.group(0)
-  name  = Models.get(model, None)
-  if name != None:
-    return name
-  else:
-    raise UnsupportedModel("Unsupported model: %s\nPlease add it to lib/models.yml" % model)
-
-
-# Returns the local path to the image
-def GetImage(model):
-  fwConfig = Config["firmware"]
-  filename = "%s-%s.bin" % (fwConfig["prefix"], model)
-  url      = "%s%s" % (fwConfig["url"], filename)
-  path     = os.path.join(ImageDir, filename)
-
-  if not os.path.exists(path):
-    write("Downloading %s ..." % url)
-    tmpfile  = "%s.tmp" % path
-
-    # Do the request
-    response = requests.get(url, stream=True)
-    if response.status_code != requests.codes.ok:
-      response.raise_for_status()
-
-    # Save the response
-    with open(tmpfile, 'wb') as f:
-      for chunk in response.iter_content(chunk_size=1024*256):
-        f.write(chunk)
-        write(".")
-
-    # Rename tempfile to target
-    os.rename(tmpfile, path)
-    print " ✓"
-  return path
-
-
-def GetAuthorization(html):
+# Determines the authorization method and URI
+def getAuthorization(html):
   if "loginBox" not in html:
     raise UnsupportedModel("unexpected html page")
 
@@ -99,7 +29,7 @@ def GetAuthorization(html):
   return (method,uri)
 
 
-class AutoFlasher:
+class Flasher:
   def __init__(self, address):
     self.address = address
     self.session = requests.Session()
@@ -118,15 +48,16 @@ class AutoFlasher:
     }
     self.session_prefix = ''
 
-    WaitForPing(address)
+  def run(self):
+    waitForPing(self.address)
 
     self.authenticate()
 
     write("Fetching model ... ")
-    self.model = ExtractModel(self.request("status", "menu").text)
+    self.model = models.extract(self.request("status", "menu").text)
     print self.model
 
-    self.image = GetImage(self.model)
+    self.image = models.get(self.model)
 
     write("Uploading image ... ")
     self.request("upload", "upgrade", files={'Filename': open(self.image, 'rb')})
@@ -136,14 +67,14 @@ class AutoFlasher:
     self.request("flash", "upload")
     print " ✓"
 
-    WaitForPing("192.168.1.1")
+    waitForPing("192.168.1.1")
 
   def authenticate(self):
     try:
       # newer TP-Link firmwares use cookie authentication
       html = self.request("root", "root").text
 
-      auth, uri = GetAuthorization(html)
+      auth, uri = getAuthorization(html)
 
       # store credentials in cookie
       self.session.cookies.set("Authorization", self.authValues[auth])
@@ -184,7 +115,3 @@ class AutoFlasher:
 
   def getURL(self, type):
     return "http://%s%s%s" % (self.address, self.session_prefix, self.urls[type])
-
-
-def Run():
-  AutoFlasher("192.168.0.1")

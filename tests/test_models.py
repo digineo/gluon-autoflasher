@@ -11,7 +11,9 @@ from sys import path
 path.append("../lib")
 
 import unittest2
-import autoflasher
+import gluon
+import gluon.flasher
+import gluon.models
 import os
 
 modelsDirectory = "models"
@@ -20,10 +22,10 @@ modelsDirectory = "models"
 class TestAuthorization(unittest2.TestCase):
 
   def get_authorization(self, basename):
-    return autoflasher.GetAuthorization(open("login/%s.html" % basename,'r').read())
+    return gluon.flasher.getAuthorization(open("login/%s.html" % basename,'r').read())
 
   def test_unsupported(self):
-    with self.assertRaises(autoflasher.UnsupportedModel):
+    with self.assertRaises(gluon.UnsupportedModel):
       self.get_authorization("unsupported")
 
   def test_wdr3600_150518(self):
@@ -45,17 +47,17 @@ class TestModels(unittest2.TestCase): pass
 
 def getModel(filename):
   with open("%s/%s" % (modelsDirectory, filename),'r') as f:
-    return autoflasher.ExtractModel(f.read())
+    return gluon.models.extract(f.read())
 
 def create_test(filename, model):
   def f(self):
     if model=="unknown":
       # special case
-      with self.assertRaises(autoflasher.UnknownModel):
+      with self.assertRaises(gluon.UnknownModel):
         getModel(filename)
     elif model=="unsupported":
       # special case
-      with self.assertRaises(autoflasher.UnsupportedModel):
+      with self.assertRaises(gluon.UnsupportedModel):
         getModel(filename)
     else:
       # supported device
