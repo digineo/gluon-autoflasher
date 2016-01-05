@@ -6,5 +6,9 @@ firmware:
   # prefix of the images (usually gluon-$site-$version)
   prefix: "gluon-ffxy-2015.1.2"
 
+setup:
+  meshvpn: yes
+  limit:
+    enabled: no
 # authorized_keys: /path/to/id_rsa.pub
 # contact: default@example.com
