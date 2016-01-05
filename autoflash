@@ -4,5 +4,7 @@ from sys import path
 path.append("lib")
 
 import gluon.flasher
+import gluon.setup
 
 gluon.flasher.run("192.168.0.1")
+gluon.setup.all()
