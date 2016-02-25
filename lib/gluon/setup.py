@@ -8,6 +8,7 @@ from sys import stdin
 from . import *
 
 def all():
+  waitForPort("192.168.1.1", 80)
   val = getConfig('authorized_keys')
   if val != "":
     with open(val, 'r') as f:

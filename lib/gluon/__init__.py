@@ -6,6 +6,7 @@ import subprocess
 import yaml
 import random
 import requests
+import socket
 
 import __builtin__
 
@@ -35,3 +36,12 @@ def waitForPing(address):
   while 0 != subprocess.call(["ping","-c", "1", "-W", "1", address], stdout=FNULL):
     write('.')
   print " ✓"
+
+# Waits for a host to respond to ICMP echo requests
+def waitForPort(address, port):
+  write("Waiting for %s:%d ..." % (address, port))
+  sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  while 0 != sock.connect_ex((address, port)):
+    write('.')
+  print " ✓"
+  sock.close()
