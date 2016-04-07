@@ -7,6 +7,7 @@ Gluon Autoflasher
 ## Compatibility
 
 It has been tested with:
+* TP-Link Archer C7 v2 (Firmware 150427)
 * TP-Link TL-WR741ND V4 (Firmware 130524, 140410 and 150119)
 * TP-Link TL-WR841N V8 (Firmware 130506 and 140724)
 * TP-Link TL-WR841N V9 (Firmware 150104 and 150310)

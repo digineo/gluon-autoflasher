@@ -37,7 +37,7 @@ def get(model):
 
 # Extracts the model from the HTML code
 def extract(html):
-  match = re.compile("WD?R[0-9]+[A-Z]* v[0-9]+").search(html)
+  match = re.compile("(WD?R\d+[A-Z]*|Archer C\d) v\d+").search(html)
   if match == None:
     #with open('unknown-model.html', 'w') as f:
     #  f.write(html)
