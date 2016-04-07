@@ -37,11 +37,11 @@ pip install requests
 
 ## Usage
 
-TP-Link routers with stock firmware usually have the IP address `192.168.0.1/24`.
-Ensure your interface has one address in this network.
+Ensure your ethernet interface has addresses in the networks 192.168.0.0/24 and 192.168.1.0/24.
 Assuming your interface is `eth0` then you run on Linux as root:
 ```
 ip addr add 192.168.0.2/24 dev eth0
+ip addr add 192.168.1.2/24 dev eth0
 ```
 
 Copy the `config.yml.default` to `config.yml` and adapt it to your needs.
